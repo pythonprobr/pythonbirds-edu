@@ -4,10 +4,10 @@ from tkinter import PhotoImage, NW, Tk, Canvas
 from tkinter.constants import ALL
 import math
 from os import path
-import atores
+import actors
 
-from fase import Fase, EM_ANDAMENTO, VITORIA
-from atores import PassaroVermelho, PassaroAmarelo, Porco, Obstaculo
+from phase import Fase, EM_ANDAMENTO, VITORIA
+from actors import RedBird, YellowBird, Pig, Obstacle
 
 ALTURA_DA_TELA = 600  # px
 
@@ -27,19 +27,19 @@ MENU = PhotoImage(file=path.join(IMAGES_PATH, "menu.gif"))
 VOCE_GANHOU = PhotoImage(file=path.join(IMAGES_PATH, "python-birds-voce-ganhou-popup.gif"))
 VOCE_PERDEU = PhotoImage(file=path.join(IMAGES_PATH, "python-birds-voce-perdeu-popup.gif"))
 
-CARACTER_PARA__IMG_DCT = {'V': PASSARO_VERMELHO,
-                          'A': PASSARO_AMARELHO,
+CARACTER_PARA__IMG_DCT = {'R': PASSARO_VERMELHO,
+                          'Y': PASSARO_AMARELHO,
                           '@': PORCO,
                           'O': OBSTACULO,
                           '+': PORCO_MORTO,
-                          ' ': TRANSPARENTE}
+                          ' ': TRANSPARENTE,}
 
 
 def plotar(camada_de_atores, ponto):
-    if ponto.caracter != ' ':
+    if ponto.character != ' ':
         x = ponto.x
         y = ALTURA_DA_TELA - ponto.y - 120  # para coincidir com o chao da tela
-        image = CARACTER_PARA__IMG_DCT.get(ponto.caracter, TRANSPARENTE)
+        image = CARACTER_PARA__IMG_DCT.get(ponto.character, TRANSPARENTE)
         camada_de_atores.create_image((x, y), image=image, anchor=NW)
 
 
@@ -85,7 +85,7 @@ def animar(tela, camada_de_atores, fase, passo=0.01, delta_t=0.01):
         elif evento.keysym == 'Down':
             angulo -= 1
         elif evento.keysym == 'Return' or evento.keysym == 'space':
-            fase.lancar(angulo, tempo)
+            fase.launch(angulo, tempo)
 
     def _replay(event):
         return
@@ -127,17 +127,17 @@ def rodar_fase(fase):
     stage = Canvas(root, width=800, height=ALTURA_DA_TELA)
 
     multiplicador = 10
-    PassaroAmarelo.velocidade_escalar *= multiplicador
-    PassaroVermelho.velocidade_escalar *= multiplicador
-    atores.GRAVIDADE = 100
+    YellowBird.velocity *= multiplicador
+    RedBird.velocity *= multiplicador
+    actors.GRAVITY = 100
     animar(root, stage, fase)
 
 
 if __name__ == '__main__':
     fase = Fase(intervalo_de_colisao=32)
-    passaros = [PassaroVermelho(30, 30), PassaroAmarelo(30, 30), PassaroAmarelo(30, 30)]
-    porcos = [Porco(750, 1), Porco(700, 1)]
-    obstaculos = [Obstaculo(310, 100)]
+    passaros = [RedBird(30, 30), YellowBird(30, 30), YellowBird(30, 30)]
+    porcos = [Pig(750, 1), Pig(700, 1)]
+    obstaculos = [Obstacle(310, 100)]
 
     fase.adicionar_obstaculo(*obstaculos)
     fase.adicionar_passaro(*passaros)

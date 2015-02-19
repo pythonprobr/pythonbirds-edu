@@ -61,7 +61,7 @@ def _jogar(delta_t, fase, passo, tempo, msg):
                     if not eh_windows:
                         input()
                     angulo = float(input('Digite o Ângulo de Lançamento: '))
-                    fase.lancar(angulo, tempo)
+                    fase.launch(angulo, tempo)
                     break
                 except:
                     print('Erro: valor tem que ser númerico!')
