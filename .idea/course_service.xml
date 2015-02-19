@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CCProjectService">
+    <course>
+      <option name="author" value="Renzo Nuccitelli" />
+      <option name="description" value="A funny approach to learn Object Orientation while implementing a simplified version of Angry Birds game" />
+      <option name="name" value="Python Birds" />
+      <option name="lessons">
+        <list>
+          <Lesson>
+            <option name="index" value="1" />
+            <option name="name" value="Demo" />
+            <option name="task_list">
+              <list>
+                <Task>
+                  <option name="index" value="1" />
+                  <option name="name" value="Introduction" />
+                  <option name="task_files">
+                    <map>
+                      <entry key="file1.py">
+                        <value>
+                          <TaskFile>
+                            <option name="task_windows">
+                              <list />
+                            </option>
+                            <option name="myIndex" value="1" />
+                          </TaskFile>
+                        </value>
+                      </entry>
+                    </map>
+                  </option>
+                  <option name="myIndex" value="1" />
+                </Task>
+              </list>
+            </option>
+            <option name="myIndex" value="1" />
+            <option name="myTasksMap">
+              <map>
+                <entry key="task1">
+                  <value>
+                    <Task>
+                      <option name="index" value="1" />
+                      <option name="name" value="Introduction" />
+                      <option name="task_files">
+                        <map>
+                          <entry key="file1.py">
+                            <value>
+                              <TaskFile>
+                                <option name="task_windows">
+                                  <list />
+                                </option>
+                                <option name="myIndex" value="1" />
+                              </TaskFile>
+                            </value>
+                          </entry>
+                        </map>
+                      </option>
+                      <option name="myIndex" value="1" />
+                    </Task>
+                  </value>
+                </entry>
+              </map>
+            </option>
+          </Lesson>
+        </list>
+      </option>
+      <option name="description" value="A funny approach to learn Object Orientation while implementing a simplified version of Angry Birds game" />
+      <option name="name" value="Python Birds" />
+      <option name="author" value="Renzo Nuccitelli" />
+      <option name="myLessonsMap">
+        <map>
+          <entry key="lesson1">
+            <value>
+              <Lesson>
+                <option name="index" value="1" />
+                <option name="name" value="Demo" />
+                <option name="task_list">
+                  <list>
+                    <Task>
+                      <option name="index" value="1" />
+                      <option name="name" value="Introduction" />
+                      <option name="task_files">
+                        <map>
+                          <entry key="file1.py">
+                            <value>
+                              <TaskFile>
+                                <option name="task_windows">
+                                  <list />
+                                </option>
+                                <option name="myIndex" value="1" />
+                              </TaskFile>
+                            </value>
+                          </entry>
+                        </map>
+                      </option>
+                      <option name="myIndex" value="1" />
+                    </Task>
+                  </list>
+                </option>
+                <option name="myIndex" value="1" />
+                <option name="myTasksMap">
+                  <map>
+                    <entry key="task1">
+                      <value>
+                        <Task>
+                          <option name="index" value="1" />
+                          <option name="name" value="Introduction" />
+                          <option name="task_files">
+                            <map>
+                              <entry key="file1.py">
+                                <value>
+                                  <TaskFile>
+                                    <option name="task_windows">
+                                      <list />
+                                    </option>
+                                    <option name="myIndex" value="1" />
+                                  </TaskFile>
+                                </value>
+                              </entry>
+                            </map>
+                          </option>
+                          <option name="myIndex" value="1" />
+                        </Task>
+                      </value>
+                    </entry>
+                  </map>
+                </option>
+              </Lesson>
+            </value>
+          </entry>
+        </map>
+      </option>
+    </course>
+  </component>
+</project>
