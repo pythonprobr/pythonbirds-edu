@@ -6,138 +6,138 @@ import math
 from os import path
 import actors
 
-from phase import Fase
-from actors import PassaroVermelho, PassaroAmarelo, Porco, Obstaculo
+from phase import Phase
+from actors import RedBird, YellowBird, Pig, Obstacle
 
-ALTURA_DA_TELA = 600  # px
+SCREEN_HEIGHT = 600  # px
 
 root = Tk()
 
 IMAGES_PATH = path.dirname(__file__)
 IMAGES_PATH = path.join(IMAGES_PATH, 'images')
-PASSARO_VERMELHO = PhotoImage(file=path.join(IMAGES_PATH, "red_bird.gif"))
-PASSARO_AMARELHO = PhotoImage(file=path.join(IMAGES_PATH, "yellow_bird.gif"))
-PORCO = PhotoImage(file=path.join(IMAGES_PATH, "pig.gif"))
-PORCO_MORTO = PhotoImage(file=path.join(IMAGES_PATH, "dead_pig.gif"))
-OBSTACULO = PhotoImage(file=path.join(IMAGES_PATH, "obstacle.gif"))
-TRANSPARENTE = PhotoImage(file=path.join(IMAGES_PATH, "transparent.gif"))
+RED_BIRD = PhotoImage(file=path.join(IMAGES_PATH, "red_bird.gif"))
+YELLOW_BIRD = PhotoImage(file=path.join(IMAGES_PATH, "yellow_bird.gif"))
+PIG = PhotoImage(file=path.join(IMAGES_PATH, "pig.gif"))
+DEAD_PIG = PhotoImage(file=path.join(IMAGES_PATH, "dead_pig.gif"))
+OBSTACLE = PhotoImage(file=path.join(IMAGES_PATH, "obstacle.gif"))
+TRANSPARENT = PhotoImage(file=path.join(IMAGES_PATH, "transparent.gif"))
 BACKGROUND = PhotoImage(file=path.join(IMAGES_PATH, "background.gif"))
 PYTHONBIRDS_LOGO = PhotoImage(file=path.join(IMAGES_PATH, "python-birds-logo.gif"))
 MENU = PhotoImage(file=path.join(IMAGES_PATH, "menu.gif"))
-VOCE_GANHOU = PhotoImage(file=path.join(IMAGES_PATH, "python-birds-you-win-popup.gif"))
-VOCE_PERDEU = PhotoImage(file=path.join(IMAGES_PATH, "python-birds-you-lose-popup.gif"))
+YOU_WIN = PhotoImage(file=path.join(IMAGES_PATH, "python-birds-you-win-popup.gif"))
+YOU_LOSE = PhotoImage(file=path.join(IMAGES_PATH, "python-birds-you-lose-popup.gif"))
 
-CARACTER_PARA__IMG_DCT = {'V': PASSARO_VERMELHO,
-                          'A': PASSARO_AMARELHO,
-                          '@': PORCO,
-                          'O': OBSTACULO,
-                          '+': PORCO_MORTO,
-                          ' ': TRANSPARENTE}
-
-
-def plotar(camada_de_atores, ponto):
-    if ponto.caracter != ' ':
-        x = ponto.x
-        y = ALTURA_DA_TELA - ponto.y - 120  # para coincidir com o chao da tela
-        image = CARACTER_PARA__IMG_DCT.get(ponto.caracter, TRANSPARENTE)
-        camada_de_atores.create_image((x, y), image=image, anchor=NW)
+CHARACTER_DCT = {'V': RED_BIRD,
+                 'A': YELLOW_BIRD,
+                 '@': PIG,
+                 'O': OBSTACLE,
+                 '+': DEAD_PIG,
+                 ' ': TRANSPARENT}
 
 
-def animar(tela, camada_de_atores, fase, passo=0.01, delta_t=0.01):
-    tempo = 0
-    passo = int(1000 * passo)
-    angulo = 0
-    multiplicador_rebobinar = 20
+def plotar(actors_layer, point):
+    if point.character != ' ':
+        x = point.x
+        y = SCREEN_HEIGHT - point.y - 120  # adjust to put ground same as background
+        image = CHARACTER_DCT.get(point.character, TRANSPARENT)
+        actors_layer.create_image((x, y), image=image, anchor=NW)
 
-    def _animar():
-        nonlocal tempo
+
+def animate(screen, actors_layer, phase, step=0.01, delta_t=0.01):
+    time = 0
+    step = int(1000 * step)
+    angle = 0
+    rewind_multiplier = 20
+
+    def _animate():
+        nonlocal time
         nonlocal delta_t
-        nonlocal angulo
-        tempo += delta_t
-        if tempo <= 0:
-            tempo = 0
-            delta_t /= -multiplicador_rebobinar
-        if fase.acabou(tempo):
-            camada_de_atores.create_image(162, 55, image=PYTHONBIRDS_LOGO, anchor=NW)
-            camada_de_atores.create_image(54, 540, image=MENU, anchor=NW)
-            if 'ganhou' in fase.status(tempo):
-                img = VOCE_GANHOU
+        nonlocal angle
+        time += delta_t
+        if time <= 0:
+            time = 0
+            delta_t /= -rewind_multiplier
+        if phase.is_over(time):
+            actors_layer.create_image(162, 55, image=PYTHONBIRDS_LOGO, anchor=NW)
+            actors_layer.create_image(54, 540, image=MENU, anchor=NW)
+            if 'Win' in phase.status(time):
+                img = YOU_WIN
             else:
-                img = VOCE_PERDEU
-            camada_de_atores.create_image(192, 211, image=img, anchor=NW)
+                img = YOU_LOSE
+            actors_layer.create_image(192, 211, image=img, anchor=NW)
         else:
-            camada_de_atores.delete(ALL)
-            camada_de_atores.create_image((0, 0), image=BACKGROUND, anchor=NW)
-            tamanho_seta = 60
-            angulo_rad = math.radians(-angulo)
+            actors_layer.delete(ALL)
+            actors_layer.create_image((0, 0), image=BACKGROUND, anchor=NW)
+            arrow_size = 60
+            angle_rad = math.radians(-angle)
 
-            camada_de_atores.create_line(52, 493, 52 + tamanho_seta * math.cos(angulo_rad),
-                                         493 + tamanho_seta * math.sin(angulo_rad), width=1.5)
-            camada_de_atores.create_text(35, 493, text=u"%d°" % angulo)
-            for ponto in fase.calcular_pontos(tempo):
-                plotar(camada_de_atores, ponto)
-            tela.after(passo, _animar)
+            actors_layer.create_line(52, 493, 52 + arrow_size * math.cos(angle_rad),
+                                     493 + arrow_size * math.sin(angle_rad), width=1.5)
+            actors_layer.create_text(35, 493, text=u"%d°" % angle)
+            for point in phase.calculate_points(time):
+                plotar(actors_layer, point)
+            screen.after(step, _animate)
 
-    def _ouvir_comandos_lancamento(evento):
-        nonlocal angulo
-        if evento.keysym == 'Up':
-            angulo += 1
-        elif evento.keysym == 'Down':
-            angulo -= 1
-        elif evento.keysym == 'Return' or evento.keysym == 'space':
-            fase.lancar(angulo, tempo)
+    def _listen_launch_command(event):
+        nonlocal angle
+        if event.keysym == 'Up':
+            angle += 1
+        elif event.keysym == 'Down':
+            angle -= 1
+        elif event.keysym == 'Return' or event.keysym == 'space':
+            phase.launch(angle, time)
 
     def _replay(event):
-        nonlocal tempo
+        nonlocal time
         nonlocal delta_t
-        if fase.acabou(tempo):
-            delta_t *= -multiplicador_rebobinar
-            _animar()
+        if phase.is_over(time):
+            delta_t *= -rewind_multiplier
+            _animate()
 
 
-    def _jogar_novamente(event):
-        nonlocal tempo
+    def _play_again(event):
+        nonlocal time
         nonlocal delta_t
-        if fase.acabou(tempo):
-            tempo = delta_t
-            fase.resetar()
-            _animar()
+        if phase.is_over(time):
+            time = delta_t
+            phase.reset()
+            _animate()
 
-    def _finalizar(event):
+    def _finalize(event):
         root.destroy()
 
-    camada_de_atores.pack()
-    _animar()
-    tela.bind_all('<KeyPress>', _ouvir_comandos_lancamento)
-    tela.bind_all('1', _replay)
-    tela.bind_all('2', _jogar_novamente)
-    tela.bind_all('3', _finalizar)
-    tela.bind_all('<Escape>', _finalizar)
+    actors_layer.pack()
+    _animate()
+    screen.bind_all('<KeyPress>', _listen_launch_command)
+    screen.bind_all('1', _replay)
+    screen.bind_all('2', _play_again)
+    screen.bind_all('3', _finalize)
+    screen.bind_all('<Escape>', _finalize)
 
-    tela.mainloop()
-    tela.after(passo, _animar)
+    screen.mainloop()
+    screen.after(step, _animate)
 
 
-def rodar_fase(fase):
+def play(phase):
     root.title("Python Birds")
     root.geometry("800x600")
     root.resizable(0, 0)
-    stage = Canvas(root, width=800, height=ALTURA_DA_TELA)
+    stage = Canvas(root, width=800, height=SCREEN_HEIGHT)
 
-    multiplicador = 10
-    PassaroAmarelo.velocidade_escalar *= multiplicador
-    PassaroVermelho.velocidade_escalar *= multiplicador
-    actors.GRAVIDADE = 100
-    animar(root, stage, fase)
+    multiplier = 10
+    YellowBird.velocity *= multiplier
+    RedBird.velocity *= multiplier
+    actors.GRAVITY = 100
+    animate(root, stage, phase)
 
 
 if __name__ == '__main__':
-    fase = Fase(intervalo_de_colisao=32)
-    passaros = [PassaroVermelho(30, 30), PassaroAmarelo(30, 30), PassaroAmarelo(30, 30)]
-    porcos = [Porco(750, 1), Porco(700, 1)]
-    obstaculos = [Obstaculo(310, 100)]
+    fase = Phase(collision_interval=32)
+    birds = [RedBird(30, 30), YellowBird(30, 30), YellowBird(30, 30)]
+    pigs = [Pig(750, 1), Pig(700, 1)]
+    obstacles = [Obstacle(310, 100)]
 
-    fase.adicionar_obstaculo(*obstaculos)
-    fase.adicionar_passaro(*passaros)
-    fase.adicionar_porco(*porcos)
-    rodar_fase(fase)
+    fase.add_obstacle(*obstacles)
+    fase.add_bird(*birds)
+    fase.add_pig(*pigs)
+    play(fase)

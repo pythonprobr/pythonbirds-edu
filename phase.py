@@ -1,87 +1,87 @@
 # -*- coding: utf-8 -*-
 from itertools import chain
-from actors import ATIVO
+from actors import ACTIVE
 
 
 class Ponto():
-    def __init__(self, x, y, caracter):
-        self.caracter = caracter
+    def __init__(self, x, y, character):
+        self.character = character
         self.x = x
         self.y = y
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.caracter == other.caracter
+        return self.x == other.x and self.y == other.y and self.character == other.character
 
     def __repr__(self, *args, **kwargs):
-        return "Ponto(%s, %s,'%s')" % (self.x, self.y, self.caracter)
+        return "Ponto(%s, %s,'%s')" % (self.x, self.y, self.character)
 
 
-class Fase():
-    def __init__(self, intervalo_de_colisao=1):
-        self.intervalo_de_colisao = intervalo_de_colisao
-        self._passaros = []
-        self._porcos = []
-        self._obstaculos = []
+class Phase():
+    def __init__(self, collision_interval=1):
+        self.collision_interval = collision_interval
+        self._birds = []
+        self._pigs = []
+        self._obstacles = []
 
-    def _adicionar_ator(self, lista, *atores):
-        lista.extend(atores)
+    def _add_actor(self, lst, *actors):
+        lst.extend(actors)
 
-    def adicionar_obstaculo(self, *obstaculos):
-        self._adicionar_ator(self._obstaculos, *obstaculos)
+    def add_obstacle(self, *obstacles):
+        self._add_actor(self._obstacles, *obstacles)
 
-    def adicionar_porco(self, *porcos):
-        self._adicionar_ator(self._porcos, *porcos)
+    def add_pig(self, *pigs):
+        self._add_actor(self._pigs, *pigs)
 
-    def adicionar_passaro(self, *passaros):
-        self._adicionar_ator(self._passaros, *passaros)
+    def add_bird(self, *birds):
+        self._add_actor(self._birds, *birds)
 
-    def acabou(self, tempo):
-        return not self._existe_porco_ativo(tempo) or not self._existe_passaro_ativo(tempo)
+    def is_over(self, time):
+        return not self._is_there_active_pig(time) or not self._is_there_active_birds(time)
 
-    def status(self, tempo):
-        if not self._existe_porco_ativo(tempo):
-            return 'Jogo em encerrado. Você ganhou!'
-        if self._existe_passaro_ativo(tempo):
-            return 'Jogo em andamento.'
-        return 'Jogo em encerrado. Você perdeu!'
+    def status(self, time):
+        if not self._is_there_active_pig(time):
+            return 'Game Over. You Win!'
+        if self._is_there_active_birds(time):
+            return 'Game on going.'
+        return 'Game Over. You lost!'
 
-    def lancar(self, angulo, tempo):
-        for passaro in self._passaros:
-            if not passaro.foi_lancado():
-                passaro.lancar(angulo, tempo)
+    def launch(self, angle, time):
+        for passaro in self._birds:
+            if not passaro.was_launched():
+                passaro.launch(angle, time)
                 return
 
     def resetar(self):
-        for ator in chain(self._passaros, self._obstaculos, self._porcos):
-            ator.resetar()
+        for ator in chain(self._birds, self._obstacles, self._pigs):
+            ator.reset()
 
-    def calcular_pontos(self, tempo):
-        pontos = [self._calcular_ponto_de_passaro(p, tempo) for p in self._passaros]
-        obstaculos_e_porcos = chain(self._obstaculos, self._porcos)
-        pontos.extend([self._transformar_em_ponto(ator, tempo) for ator in obstaculos_e_porcos])
-        return pontos
+    def calculate_points(self, time):
+        points = [self._calculate_bird_point(p, time) for p in self._birds]
+        obstacles_and_pigs = chain(self._obstacles, self._pigs)
+        points.extend([self._to_point(actor, time) for actor in obstacles_and_pigs])
+        return points
 
-    def _transformar_em_ponto(self, ator, tempo):
-        return Ponto(ator.x, ator.y, ator.caracter(tempo))
+    def _to_point(self, actor, time):
+        return Ponto(actor.x, actor.y, actor.character(time))
 
-    def _calcular_ponto_de_passaro(self, passaro, tempo, ):
-        passaro.calcular_posicao(tempo)
-        for ator in chain(self._obstaculos, self._porcos):
-            if ATIVO == passaro.status(tempo):
-                passaro.colidir(ator, tempo, self.intervalo_de_colisao)
-                passaro.colidir_com_chao(tempo)
+    def _calculate_bird_point(self, bird, time):
+        bird.calculate_position(time)
+        for actor in chain(self._obstacles, self._pigs):
+            if ACTIVE == bird.status(time):
+                bird.clash(actor, time, self.collision_interval)
+                bird.ground_clash(time)
             else:
                 break
-        return self._transformar_em_ponto(passaro, tempo)
+        return self._to_point(bird, time)
 
-    def _existe_porco_ativo(self, tempo):
-        return self._verificar_se_existe_ator_ativo(self._porcos, tempo)
+    def _is_there_active_pig(self, time):
+        return self._is_there_active_actor(self._pigs, time)
 
-    def _verificar_se_existe_ator_ativo(self, atores, tempo):
-        for a in atores:
-            if a.status(tempo) == ATIVO:
+    def _is_there_active_actor(self, actors, time):
+        for a in actors:
+            if a.status(time) == ACTIVE:
                 return True
         return False
 
-    def _existe_passaro_ativo(self, tempo):
-        return self._verificar_se_existe_ator_ativo(self._passaros, tempo)
+    def _is_there_active_birds(self, time):
+        return self._is_there_active_actor(self._birds, time)
