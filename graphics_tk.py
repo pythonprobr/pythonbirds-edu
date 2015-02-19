@@ -6,7 +6,7 @@ import math
 from os import path
 import actors
 
-from phase import Fase, EM_ANDAMENTO, VITORIA
+from phase import Phase, ON_GOING, VICTORY
 from actors import RedBird, YellowBird, Pig, Obstacle
 
 ALTURA_DA_TELA = 600  # px
@@ -57,10 +57,10 @@ def animar(tela, camada_de_atores, fase, passo=0.01, delta_t=0.01):
         if tempo <= 0:
             tempo = 0
             delta_t /= -multiplicador_rebobinar
-        if fase.status() != EM_ANDAMENTO:
+        if fase.status() != ON_GOING:
             camada_de_atores.create_image(162, 55, image=PYTHONBIRDS_LOGO, anchor=NW)
             camada_de_atores.create_image(54, 540, image=MENU, anchor=NW)
-            if fase.status() == VITORIA:
+            if fase.status() == VICTORY:
                 img = VOCE_GANHOU
             else:
                 img = VOCE_PERDEU
@@ -74,7 +74,7 @@ def animar(tela, camada_de_atores, fase, passo=0.01, delta_t=0.01):
             camada_de_atores.create_line(52, 493, 52 + tamanho_seta * math.cos(angulo_rad),
                                          493 + tamanho_seta * math.sin(angulo_rad), width=1.5)
             camada_de_atores.create_text(35, 493, text="%d°" % angulo)
-            for ponto in fase.calcular_pontos(tempo):
+            for ponto in fase.calculate_points(tempo):
                 plotar(camada_de_atores, ponto)
             tela.after(passo, _animar)
 
@@ -134,12 +134,12 @@ def rodar_fase(fase):
 
 
 if __name__ == '__main__':
-    fase = Fase(intervalo_de_colisao=32)
+    fase = Phase(clash_interval=32)
     passaros = [RedBird(30, 30), YellowBird(30, 30), YellowBird(30, 30)]
     porcos = [Pig(750, 1), Pig(700, 1)]
     obstaculos = [Obstacle(310, 100)]
 
-    fase.adicionar_obstaculo(*obstaculos)
-    fase.adicionar_passaro(*passaros)
-    fase.adicionar_porco(*porcos)
+    fase.add_obstacles(*obstaculos)
+    fase.add_birds(*passaros)
+    fase.add_pigs(*porcos)
     rodar_fase(fase)

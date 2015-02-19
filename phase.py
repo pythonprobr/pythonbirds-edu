@@ -4,12 +4,12 @@ from actors import ACTIVE
 
 # Status possíveis do jogo
 
-VITORIA = 'VITORIA'
-DERROTA = 'DERROTA'
-EM_ANDAMENTO = 'EM_ANDAMENTO'
+VICTORY = 'VICTORY'
+DEFEAT = 'DEFEAT'
+ON_GOING = 'ON_GOING'
 
 
-class Ponto():
+class Point():
     def __init__(self, x, y, character):
         self.character = character
         self.x = round(x)
@@ -22,131 +22,117 @@ class Ponto():
         return hash(self.x) ^ hash(self.y)
 
     def __repr__(self, *args, **kwargs):
-        return "Ponto(%s,%s,'%s')" % (self.x, self.y, self.character)
+        return "Point(%s,%s,'%s')" % (self.x, self.y, self.character)
 
 
-class Fase():
-    def __init__(self, intervalo_de_colisao=1):
+class Phase():
+    def __init__(self, clash_interval=1):
         """
-        Método que inicializa uma fase.
+        Method that initializes a phase.
 
-        :param intervalo_de_colisao:
+        :param clash_interval:
         """
-        self.intervalo_de_colisao = intervalo_de_colisao
-        self._passaros = []
-        self._porcos = []
-        self._obstaculos = []
+        self.clash_interval = clash_interval
+        self._birds = []
+        self._pigs = []
+        self._obstacles = []
 
-    def _adicionar_ator(self, lista, *atores):
-        lista.extend(atores)
+    def _add_actors(self, lst, *actors):
+        lst.extend(actors)
 
-    def adicionar_obstaculo(self, *obstaculos):
+    def add_obstacles(self, *obstacles):
         """
-        Adiciona obstáculos em uma fase
+        Add obstacles to a phase
 
-        :param obstaculos:
+        :param obstacles:
         """
-        self._adicionar_ator(self._obstaculos, *obstaculos)
+        self._add_actors(self._obstacles, *obstacles)
 
-    def adicionar_porco(self, *porcos):
+    def add_pigs(self, *pigs):
         """
-        Adiciona porcos em uma fase
+        Add pigs to a phase
 
-        :param porcos:
+        :param pigs:
         """
-        self._adicionar_ator(self._porcos, *porcos)
+        self._add_actors(self._pigs, *pigs)
 
-    def adicionar_passaro(self, *passaros):
+    def add_birds(self, *birds):
         """
-        Adiciona pássaros em uma fase
+        Add birds to a phase
 
-        :param passaros:
+        :param birds:
         """
-        self._adicionar_ator(self._passaros, *passaros)
+        self._add_actors(self._birds, *birds)
 
-    # def acabou(self):
-    # """
-    #     Método que retorna verdadeiro se o jogo acabou e falso caso contrário
-    #
-    #     O jogo pode acabar por dois motivos:
-    #
-    #     1. Não existem mais porcos ativos no jogo
-    #     2. Não existem mais pássaros ativos no jogo
-    #
-    #     :return: booleano
-    #     """
-    #     return self.status() != EM_ANDAMENTO
 
     def status(self):
         """
-        Método que indica com mensagem o status do jogo
+        Method that indicates the game's status:
 
-        Se o jogo está em andamento (ainda tem porco ativo e pássaro ativo), retorna essa mensagem.
+        ON_GOING if game is still running (there is one bird active at least).
 
-        Se o jogo acabou com derrota (ainda existe porco ativo), retorna essa mensagem
+        DEFEAT if game is over with defeat (there is one pig active at least and no bird active)
 
-        Se o jogo acabou com vitória (não existe porco ativo), retorna essa mensagem
+        VICTORY if game is over with victory (there is no active pig)
 
         :return:
         """
-        if not self._existe_porco_ativo():
-            return VITORIA
-        if self._existe_passaro_ativo():
-            return EM_ANDAMENTO
-        return DERROTA
+        if not self._is_there_active_pig():
+            return VICTORY
+        if self._is_there_active_bird():
+            return ON_GOING
+        return DEFEAT
 
-    def launch(self, angulo, tempo):
+    def launch(self, angle, time):
         """
-        Método que executa lógica de lançamento.
+        Method that executes launch logic.
 
-        Deve escolher o primeiro pássaro não lançado da lista e chamar seu método lançar
+        It must pick the first not launched bird from list
 
-        Se não houver esse tipo de pássaro, não deve fazer nada
+        If there is no bird of this kind, nothing must happen
 
-        :param angulo: ângulo de lançamento
-        :param tempo: Tempo de lançamento
+        :param angle: launch angle
+        :param time: launch time
         """
-        for passaro in self._passaros:
-            if not passaro.launched():
-                passaro.launch(angulo, tempo)
+        for bird in self._birds:
+            if not bird.launched():
+                bird.launch(angle, time)
                 return
 
 
-    def calcular_pontos(self, tempo):
+    def calculate_points(self, time):
         """
-        Lógica que retorna os pontos a serem exibidos na tela.
+        Method that convert Actors to Points.
 
-        Cada ator deve ser transformado em um Ponto.
-
-        :param tempo: tempo para o qual devem ser calculados os pontos
-        :return: objeto do tipo Ponto
+        :param time: game's time
+        :return: Point object
         """
-        pontos = [self._calcular_ponto_de_passaro(p, tempo) for p in self._passaros]
-        obstaculos_e_porcos = chain(self._obstaculos, self._porcos)
-        pontos.extend([self._transformar_em_ponto(ator) for ator in obstaculos_e_porcos])
-        return pontos
+        points = [self._calculate_bird_points(p, time) for p in self._birds]
+        obstacles_and_pigs = chain(self._obstacles, self._pigs)
+        points.extend([self._to_point(actor) for actor in obstacles_and_pigs])
+        return points
 
-    def _transformar_em_ponto(self, ator):
-        return Ponto(ator.x, ator.y, ator.character())
+    def _to_point(self, actor):
+        return Point(actor.x, actor.y, actor.character())
 
-    def _calcular_ponto_de_passaro(self, passaro, tempo, ):
-        passaro.calculate_position(tempo)
-        for ator in chain(self._obstaculos, self._porcos):
-            if ACTIVE == passaro.status:
-                passaro.clash(ator, self.intervalo_de_colisao)
-                passaro.ground_clash()
+    def _calculate_bird_points(self, bird, time):
+        bird.calculate_position(time)
+        for actor in chain(self._obstacles, self._pigs):
+            if ACTIVE == bird.status:
+                bird.clash(actor, self.clash_interval)
+                bird.ground_clash()
             else:
                 break
-        return self._transformar_em_ponto(passaro)
+        return self._to_point(bird)
 
-    def _existe_porco_ativo(self):
-        return self._verificar_se_existe_ator_ativo(self._porcos)
+    def _is_there_active_pig(self):
+        return self._check_active_actor(self._pigs)
 
-    def _verificar_se_existe_ator_ativo(self, atores):
-        for a in atores:
+    def _check_active_actor(self, actors):
+        for a in actors:
             if a.status == ACTIVE:
                 return True
         return False
 
-    def _existe_passaro_ativo(self):
-        return self._verificar_se_existe_ator_ativo(self._passaros)
+    def _is_there_active_bird(self):
+        return self._check_active_actor(self._birds)

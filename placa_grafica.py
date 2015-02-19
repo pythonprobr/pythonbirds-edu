@@ -38,7 +38,7 @@ ALTURA = 20
 def desenhar_e_esperar(delta_t, fase, passo, tempo, msg):
     time.sleep(passo)
     apagar_tela()
-    pontos_cartesianos = fase.calcular_pontos(tempo)
+    pontos_cartesianos = fase.calculate_points(tempo)
     print('%s Tempo: %.2f' % (msg, tempo))
     print(desenhar(*pontos_cartesianos))
     tempo += delta_t
