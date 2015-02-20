@@ -1,13 +1,13 @@
 # coding: utf-8
-import time
 from tkinter import PhotoImage, NW, Tk, Canvas
 from tkinter.constants import ALL
 import math
 from os import path
-import actors
 
+import actors
 from phase import Phase, ON_GOING, VICTORY
 from actors import RedBird, YellowBird, Pig, Obstacle
+
 
 ALTURA_DA_TELA = 600  # px
 
@@ -133,13 +133,17 @@ def rodar_fase(fase):
     animar(root, stage, fase)
 
 
-if __name__ == '__main__':
+def main():
+    global fase, passaros, porcos, obstaculos
     fase = Phase(clash_interval=32)
     passaros = [RedBird(30, 30), YellowBird(30, 30), YellowBird(30, 30)]
     porcos = [Pig(750, 1), Pig(700, 1)]
     obstaculos = [Obstacle(310, 100)]
-
     fase.add_obstacles(*obstaculos)
     fase.add_birds(*passaros)
     fase.add_pigs(*porcos)
     rodar_fase(fase)
+
+
+if __name__ == '__main__':
+    main()

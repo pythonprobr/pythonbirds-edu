@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 from unittest.case import TestCase
+
 from actors import Actor, DESTROYED, ACTIVE, Obstacle, Pig, YellowBird, RedBird
 
 

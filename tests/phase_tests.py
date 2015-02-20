@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from itertools import chain
 
 import os
 from os import path
@@ -16,7 +15,7 @@ project_dir = os.path.join(os.path.dirname(__file__), '..')
 project_dir = os.path.normpath(project_dir)
 sys.path.append(project_dir)
 
-from actors import Obstacle, Pig, RedBird, YellowBird, DESTROYED, ACTIVE
+from actors import Obstacle, Pig, RedBird, YellowBird, DESTROYED
 from phase import Phase, Point, ON_GOING, VICTORY, DEFEAT
 
 

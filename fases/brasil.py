@@ -6,7 +6,7 @@ project_dir = path.dirname(__file__)
 project_dir = path.join('..')
 sys.path.append(project_dir)
 
-from actors import YellowBird, RedBird, Obstacle, Pig
+from actors import YellowBird, Pig
 from phase import Phase
 from graphics_tk import rodar_fase
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from itertools import chain
+
 from actors import ACTIVE
+
 
 # Status possíveis do jogo
 
